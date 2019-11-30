@@ -18,3 +18,7 @@ button {
     color: black !important;
     margin-top: 1em;
 }
+
+#gameView p, #resultView p {
+    margin: 1em 2em;
+}
