@@ -134,5 +134,16 @@ function Board(optons) {
           }
           return copy
       }
+
+      function getAvailableMoves (board) {
+          let getAvailableMoves = []
+          for (let row = 0 ; row<3 ; column++){
+              for (let column = 0 ; column<3 ; column++){
+                  if (board[row][column]===""){
+                      AvailableMoves.push({row, column})
+                  }
+              }
+          }
+      }
   }
 }
