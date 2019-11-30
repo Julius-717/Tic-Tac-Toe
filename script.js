@@ -88,4 +88,20 @@ function Board (optons){
             return {result, winningLine};
         }
     }
+
+    let diag1 = [board[0][0],board[1][1],board[2][2]]
+    line = diag1.join('')
+    if(succession(line)){
+        result = symbol
+        winningLine = [[0,0], [1,1], [2,2]]
+        return {result, winningLine};
+    }
+
+    let diag1 = [board[0][2],board[1][1],board[2][0]]
+    line = diag2.join('')
+    if(succession(line)){
+        result = symbol
+        winningLine = [[0,2], [1,1], [2,0]]
+        return {result, winningLine};
+    }
 }
