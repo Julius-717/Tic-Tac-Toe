@@ -50,3 +50,7 @@ button {
 #row2 .col2 {
   border-bottom-right-radius: 10px;
 }
+
+.cell.winningLine {
+    color: green;
+}
