@@ -8,3 +8,9 @@ const RESULT = {
     playerOWon: SYMBOLS.o,
     tie: 3
 }
+const VIEW = {
+    question1: 1,
+    question2: 2,
+    game: 3,
+    result: 4
+}
