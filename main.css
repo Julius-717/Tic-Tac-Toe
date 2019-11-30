@@ -12,3 +12,9 @@ html, body {
 #view1, #view2 {
     text-align: center;
 }
+
+button {
+    background-color: white !important;
+    color: black !important;
+    margin-top: 1em;
+}
