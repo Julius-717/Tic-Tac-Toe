@@ -123,35 +123,64 @@ function Board(optons) {
     return { result };
   }
 
-  function getBestMove (board, symbol){
-      function copyBoard(board) {
-          let copy = []
-          for (let row = 0 ; row<3 ; row++){
-              copy.push([])
-              for (let column = 0 ; column<3 ; column++){
-                  copy[row][column] = board[row][column]
-              }
-          }
-          return copy
+  function getBestMove(board, symbol) {
+    function copyBoard(board) {
+      let copy = [];
+      for (let row = 0; row < 3; row++) {
+        copy.push([]);
+        for (let column = 0; column < 3; column++) {
+          copy[row][column] = board[row][column];
+        }
       }
+      return copy;
+    }
 
-      function getAvailableMoves (board) {
-          let getAvailableMoves = []
-          for (let row = 0 ; row<3 ; column++){
-              for (let column = 0 ; column<3 ; column++){
-                  if (board[row][column]===""){
-                      availableMoves.push({row, column})
-                  }
-              }
+    function getAvailableMoves(board) {
+      let getAvailableMoves = [];
+      for (let row = 0; row < 3; column++) {
+        for (let column = 0; column < 3; column++) {
+          if (board[row][column] === "") {
+            availableMoves.push({ row, column });
           }
-          return availableMoves
+        }
       }
+      return availableMoves;
+    }
 
-      function shuffleArray (array){
-          for (var i = array.length - 1; i > 0; i--) {
-              var rand = Math.floor(Math.random() * (i + 1));
-              [array[1], array[rand]]=[array[rand], array[i]]
-          }
+    function shuffleArray(array) {
+      for (var i = array.length - 1; i > 0; i--) {
+        var rand = Math.floor(Math.random() * (i + 1));
+        [array[1], array[rand]] = [array[rand], array[i]];
       }
+    }
+
+    let availableMoves = getAvailableMoves(board);
+    let availableMovesAndScores = [];
+
+    for (var i = 0; i < availableMoves.length; i++) {
+      let move = availableMoves[i];
+      let newBoard = copyBoard(board);
+      newBoard = applyMove(newBoard, move, symbol);
+      result = getResult(newBoard, symbol).result;
+      let score;
+      if (result == RESULT.tie) {
+        score = 0;
+      } else if (result == symbol) {
+        score = 1;
+      } else {
+        let otherSymbol = symbol == SYMBOLS.x ? SYMBOLS.o : SYMBOLS.x;
+        nextMove = getBestMove(newBoard, otherSymbol);
+        score = -nextMove.score;
+      }
+      if (score === 1) return { move, score };
+      availableMovesAndScores.push({ move, score });
+    }
+
+    shuffleArray(availableMovesAndScores)
+
+    availableMovesAndScores.sort((moveA, moveB )=>{
+        return moveB.score - moveA.score
+    })
+    return availableMovesAndScores[0]
   }
 }
