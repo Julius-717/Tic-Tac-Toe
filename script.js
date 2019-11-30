@@ -32,4 +32,15 @@ function Board (optons){
             }
         ]
     }
+
+    function initGame(){
+        state.game = {
+            _gameBoard: [
+                ["", "", ""]
+                ["", "", ""]
+                ["", "", ""]
+            ],
+            turn: Math.round(Math.random()),
+        }
+    }
 }
