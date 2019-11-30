@@ -61,5 +61,12 @@ function Board (optons){
         if (moveCount(board)<5){
             return {result}
         }
+
+        function succession (line){
+            return (line === symbol.repeat(3))
+        }
+
+        let line
+        let winningLine = []
     }
 }
