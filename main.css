@@ -4,6 +4,9 @@ body {
   color: white;
   width: 100%;
   display: flex;
+  background-image: url("/pexels1.jpeg");
+  background-repeat: no-repeat;
+  background-size: cover;
 }
 
 #root {
