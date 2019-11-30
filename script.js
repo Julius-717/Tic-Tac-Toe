@@ -68,5 +68,14 @@ function Board (optons){
 
         let line
         let winningLine = []
+
+        for (var i = 0 ; i<3 ; i++){
+            line = board[i].join('')
+            if(succession(line)){
+                result = symbol;
+                winningLine = [[i,0], [i,1], [i,2]]
+                return {result, winningLine};
+            }
+        }
     }
 }
