@@ -140,9 +140,17 @@ function Board(optons) {
           for (let row = 0 ; row<3 ; column++){
               for (let column = 0 ; column<3 ; column++){
                   if (board[row][column]===""){
-                      AvailableMoves.push({row, column})
+                      availableMoves.push({row, column})
                   }
               }
+          }
+          return availableMoves
+      }
+
+      function shuffleArray (array){
+          for (var i = array.length - 1; i > 0; i--) {
+              var rand = Math.floor(Math.random() * (i + 1));
+              [array[1], array[rand]]=[array[rand], array[i]]
           }
       }
   }
