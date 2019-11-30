@@ -55,4 +55,11 @@ function Board (optons){
         }
         return moveCount
     }
+
+    function getResult(board,symbol){
+        let result = RESULT.incomplete
+        if (moveCount(board)<5){
+            return {result}
+        }
+    }
 }
