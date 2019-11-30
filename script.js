@@ -16,5 +16,20 @@ const VIEW = {
 }
 
 function Board (optons){
-    
+
+    state = {
+        view: VIEW.question1,
+        players: [
+            {
+                symbol: null,
+                isComputer: false,
+                score: 0
+            },
+            {
+                symbol: null,
+                isComputer: false,
+                score: 0
+            }
+        ]
+    }
 }
