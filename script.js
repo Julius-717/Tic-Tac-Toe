@@ -15,7 +15,7 @@ const VIEW = {
   result: 4
 };
 
-function Board(optons) {
+function Board(options) {
   state = {
     view: VIEW.question1,
     players: [
@@ -34,12 +34,17 @@ function Board(optons) {
 
   function initGame() {
     state.game = {
-      _gameBoard: [["", "", ""][("", "", "")][("", "", "")]],
-      turn: Math.round(Math.random())
+      _gameBoard: [
+        ["", "", ""],
+        ["", "", ""],
+        ["", "", ""]
+      ],
+      turn: Math.round(Math.random()) 
     };
   }
 
   function moveCount(board) {
+    
     let moveCount = 0;
     for (let i = 0; i < board.length; i++) {
       for (let j = 0; j < board[i].length; j++) {
@@ -52,6 +57,7 @@ function Board(optons) {
   }
 
   function getResult(board, symbol) {
+    
     let result = RESULT.incomplete;
     if (moveCount(board) < 5) {
       return { result };
@@ -64,6 +70,7 @@ function Board(optons) {
     let line;
     let winningLine = [];
 
+    
     for (var i = 0; i < 3; i++) {
       line = board[i].join("");
       if (succession(line)) {
@@ -84,7 +91,7 @@ function Board(optons) {
         result = symbol;
         winningLine = [
           [0, j],
-          [i, j],
+          [1, j],
           [2, j]
         ];
         return { result, winningLine };
@@ -103,7 +110,7 @@ function Board(optons) {
       return { result, winningLine };
     }
 
-    let diag1 = [board[0][2], board[1][1], board[2][0]];
+    let diag2 = [board[0][2], board[1][1], board[2][0]];
     line = diag2.join("");
     if (succession(line)) {
       result = symbol;
@@ -115,6 +122,7 @@ function Board(optons) {
       return { result, winningLine };
     }
 
+    
     if (moveCount(board) == 9) {
       result = RESULT.tie;
       return { result, winningLine };
@@ -124,6 +132,7 @@ function Board(optons) {
   }
 
   function getBestMove(board, symbol) {
+    
     function copyBoard(board) {
       let copy = [];
       for (let row = 0; row < 3; row++) {
@@ -136,8 +145,9 @@ function Board(optons) {
     }
 
     function getAvailableMoves(board) {
-      let getAvailableMoves = [];
-      for (let row = 0; row < 3; column++) {
+    
+      let availableMoves = [];
+      for (let row = 0; row < 3; row++) {
         for (let column = 0; column < 3; column++) {
           if (board[row][column] === "") {
             availableMoves.push({ row, column });
@@ -148,9 +158,10 @@ function Board(optons) {
     }
 
     function shuffleArray(array) {
+    
       for (var i = array.length - 1; i > 0; i--) {
         var rand = Math.floor(Math.random() * (i + 1));
-        [array[1], array[rand]] = [array[rand], array[i]];
+        [array[i], array[rand]] = [array[rand], array[i]];
       }
     }
 
@@ -158,6 +169,7 @@ function Board(optons) {
     let availableMovesAndScores = [];
 
     for (var i = 0; i < availableMoves.length; i++) {
+    
       let move = availableMoves[i];
       let newBoard = copyBoard(board);
       newBoard = applyMove(newBoard, move, symbol);
@@ -176,172 +188,224 @@ function Board(optons) {
       availableMovesAndScores.push({ move, score });
     }
 
-    shuffleArray(availableMovesAndScores)
+    shuffleArray(availableMovesAndScores);
 
-    availableMovesAndScores.sort((moveA, moveB )=>{
-        return moveB.score - moveA.score
-    })
-    return availableMovesAndScores[0]
-  } 
+    availableMovesAndScores.sort((moveA, moveB) => {
+      return moveB.score - moveA.score;
+    });
+    return availableMovesAndScores[0];
+  }
 
-  function render(){
-      funtion getPlayerName(playerSymbol) {
-          if(playerSymbol === state.players[0].symbol)
-            return state.players[0].isComputer ? 'Computer' : "Player1"
-            return state.players[1].isComputer ? 'Computer' : "Player2"
-      }
+  function render() {
+    
+    function getPlayerName(playerSymbol) {
+      if (playerSymbol === state.players[0].symbol)
+        return state.players[0].isComputer ? "Computer" : "Player1";
+      return state.players[1].isComputer ? "Computer" : "Player2";
+    }
 
-      function buttonHTML(btnGroup, data, text){
-          return `<button type="button" class="btn btn-lg btn-default btnGroup${btnGroup}" data=${data}>${text}</button>`
-      }
+    function buttonHTML(btnGroup, data, text) {
+      return `<button type="button" class="btn btn-lg btn-default btnGroup${btnGroup}" data=${data}>${text}</button>`;
+    }
 
-      function htmlQ1(){
-          return `div id="view2"><h3>${!state.players[1].isComputer? "Player 1, <br />" : ""}Which symbols would you like to use?</h3>}`
-          ${buttonHTML(1, "1player", "Man Against computer")}
-          ${buttonHTML(2, "2players", "Man Against Man")}
-          </div>`
-      }
+    function htmlSpaces(times) {
+      return "&emsp;".repeat(times);
+    }
 
-      function htmlQ2(){
-        const html2=`<div id="view2"><h3>${!state.players[1].isComputer? "Player 1, <br />" : ""}Which symbols would you like to use?</h3>
+    function htmlQ1() {
+      return `<div id="view1"><h3>Which do you prefer?\n</h3>
+        ${buttonHTML(1, "1player", "Man Against computer")}
+        ${buttonHTML(1, "2players", "Man Against Man")}
+        </div>`;
+    }
+
+    function htmlQ2() {
+      const html2 = `<div id="view2"><h3>${
+        !state.players[1].isComputer ? "Player 1, <br />" : ""
+      }Which symbols would you like to use?</h3>
         ${buttonHTML(2, "X", "X")}
-        ${buttonHTML(2, "O", "O")}`
-        return html2
-      }
+        ${buttonHTML(2, "O", "O")}`;
+      return html2;
+    }
 
-      function htmlGame (){
-        const moveNumber = moveCount(state.game._gameBoard) + 1
-        const playerName = state.game.turn === 0 ? 'Player1' : state.players[1].isComputer ? 'Computer' : 'Player2'
+    function htmlGame() {
+      const moveNumber = moveCount(state.game._gameBoard) + 1;
+      const playerName =
+        state.game.turn === 0
+          ? "Player1"
+          : state.players[1].isComputer
+          ? "Computer"
+          : "Player2";
+    
+    
+    
 
+      let htmlBefore = `<h3>move: ${moveNumber} ${htmlSpaces(
+        5
+      )} turn: ${playerName}</h3>`;
+      let board = state.game._gameBoard.reduce(function(acc, curr, rowIndex) {
+        return (
+          acc +
+          `<div id= "row${rowIndex}" class="row">${curr
+            .map(
+              (str, colIndex) =>
+                `<div class="cell col${colIndex}" data-row=${rowIndex} data-column=${colIndex}>${str}</div>`
+            )
+            .join("")}</div>`
+        );
+      }, ``);
+      let htmlAfter = `<h4>Score: ${htmlSpaces(1)} Player 1 - ${
+        state.players[0].score
+      } ${htmlSpaces(2)} ${
+        state.players[1].isComputer ? "Computer" : "Player 2"
+      } - ${state.players[1].score}</h4>`;
+      return `<div id='gameView'> ${htmlBefore} <div id="board">${board}</div> ${htmlAfter} </div>`;
+    }
 
-        let htmlBefore = `<h3>move: ${moveNumber} ${htmlSpaces(5)} turn: ${playerName}</h3>`
-      let board = state.game._gameBoard.reduce(function(acc,curr,rowIndex){
-          return acc + `<div id= "row${rowIndex}" class="row">${curr.map((str,colIndex)=>`<div class="cell col${colIndex}" data-row=${rowIndex} data-column=${colIndex}>${str}</div>`).join('')}</div>`
-        }, ``)
-        let htmlAfter = `<h4>Score: ${htmlSpaces(1)} Player 1 - ${state.players[0].score} ${htmlSpaces(2)} ${state.players[1].isComputer? "Computer" : "Player 2" } - ${state.players[1].score}</h4>`
-      return `<div id='gameView'> ${htmlBefore} <div id="board">${board}</div> ${htmlAfter} </div>`
-
-
-      function htmlGameEnd (){
-        function arraysAreEqual (arr1, arr2){
-          if(arr1.length !== arr2.length)
-            return false;
-          for(var i = arr1.length; i--;) {
-              if(arr1[i] !== arr2[i])
-                  return false;
-          }
-          return true;
+    function htmlGameEnd() {
+      function arraysAreEqual(arr1, arr2) {
+        if (arr1.length !== arr2.length) return false;
+        for (var i = arr1.length; i--; ) {
+          if (arr1[i] !== arr2[i]) return false;
         }
-  
-        let {result, winningLine} = getResult(state.game._gameBoard, state.players[state.game.turn].symbol )
-        let resultText = "tie"
-        if(result !== RESULT.tie)
-          resultText = getPlayerName(result) + " Won"
-  
-        let htmlBefore = `<h3>${resultText} ${htmlSpaces(2)} Click to restart </h3> `
-        let board = state.game._gameBoard.reduce(function(acc,curr,rowIndex){
-            return acc + `<div id="row${rowIndex}" class="row">${curr.map(
-              (str,colIndex)=>
-              `<div class="cell col${colIndex} ${winningLine.some(arr=>(arraysAreEqual(arr,[rowIndex,colIndex]))) ? "winningLine" : ""}"
-                data-row=${rowIndex} data-column=${colIndex}>${str}</div>`).join('')}</div>`
-          }, ``)
-          let htmlAfter = `<h4>Score: ${htmlSpaces(1)} Player 1 - ${state.players[0].score} ${htmlSpaces(2)} ${state.players[1].isComputer? "Computer" : "Player 2" } - ${state.players[1].score}</h4>`
-        return `<div id='resultView'> ${htmlBefore} <div id="board">${board}</id> ${htmlAfter} </div>`
+        return true;
       }
-  
-      let html = ''
-      if (state.view == VIEW.question1) {html = htmlQ1()}
-      else if (state.view == VIEW.question2) {html = htmlQ2()}
-      else if (state.view == VIEW.result) {html=htmlGameEnd()}
-      else {html=htmlGame()}
-      // console.log(html)
-      options.el.innerHTML = html
+
+      let { result, winningLine } = getResult(
+        state.game._gameBoard,
+        state.players[state.game.turn].symbol
+      );
+      let resultText = "tie";
+      if (result !== RESULT.tie) resultText = getPlayerName(result) + " Won";
+
+      let htmlBefore = `<h3>${resultText} ${htmlSpaces(
+        2
+      )} Click to restart </h3> `;
+      let board = state.game._gameBoard.reduce(function(acc, curr, rowIndex) {
+        return (
+          acc +
+          `<div id="row${rowIndex}" class="row">${curr
+            .map(
+              (str, colIndex) =>
+                `<div class="cell col${colIndex} ${
+                  winningLine.some(arr =>
+                    arraysAreEqual(arr, [rowIndex, colIndex])
+                  )
+                    ? "winningLine"
+                    : ""
+                }"
+                data-row=${rowIndex} data-column=${colIndex}>${str}</div>`
+            )
+            .join("")}</div>`
+        );
+      }, ``);
+      let htmlAfter = `<h4>Score: ${htmlSpaces(1)} Player 1 - ${
+        state.players[0].score
+      } ${htmlSpaces(2)} ${
+        state.players[1].isComputer ? "Computer" : "Player 2"
+      } - ${state.players[1].score}</h4>`;
+      return `<div id='resultView'> ${htmlBefore} <div id="board">${board}</id> ${htmlAfter} </div>`;
     }
-  
-    function question1Handler (ev){
-      state.players[1].isComputer = !($(ev.currentTarget).attr('data')==="2players")
-      state.view = VIEW.question2
-      render()
+
+    let html = "";
+    if (state.view == VIEW.question1) {
+      html = htmlQ1();
+    } else if (state.view == VIEW.question2) {
+      html = htmlQ2();
+    } else if (state.view == VIEW.result) {
+      html = htmlGameEnd();
+    } else {
+      html = htmlGame();
     }
-  
-    function question2Handler (ev){
-      let player1Symbol = $(ev.currentTarget).attr('data')
-      state.players[0].symbol=player1Symbol;
-      state.players[1].symbol=(player1Symbol===SYMBOLS.x)? SYMBOLS.o: SYMBOLS.x;
-  
-      state.view = VIEW.game
-      initGame()
-      if(state.players[state.game.turn].isComputer)
-        doComputerMove()
-  
-      render()
-    }
-  
-    function doComputerMove (){
-      let symbol = state.players[1].symbol
-      let move = getBestMove(state.game._gameBoard, symbol).move
-      executeTurn(state.game._gameBoard,move, symbol)
-    }
-  
-    function playerMoveHandler (ev){
-      let symbol = state.players[state.game.turn].symbol
-      let row = parseInt($(ev.currentTarget).attr('data-row'))
-      let column = parseInt($(ev.currentTarget).attr('data-column'))
-      executeTurn(state.game._gameBoard, {row, column}, symbol)
-    }
-  
-    function applyMove(board,move, symbol) {
-      board[move.row][move.column]= symbol
-      return board
-    }
-  
-    function executeTurn(board, move, symbol) {
-      if (board[move.row][move.column]!==""){
-        return board
-      }
-  
-      applyMove(board,move,symbol)
-      let result = getResult(board, symbol).result
-  
-      if (result === RESULT.incomplete){
-        state.game.turn = (state.game.turn+1)%2
-        render()
-      } else {
-        //Increment score and show result
-        if(result !== RESULT.tie) {
-          let winningPlayer = state.players.find((player)=>{return player.symbol == result})
-          winningPlayer.score++
-        }
-  
-        state.view = VIEW.result
-        render()
-      }
-      if (result==RESULT.incomplete && state.players[state.game.turn].isComputer){
-        doComputerMove()
-      }
-    }
-  
-    function beginGame(){
-      initGame()
-      state.view = VIEW.game
-      render()
-      if(state.game.turn === 1 && state.players[1].isComputer)
-        doComputerMove();
-    }
-  
-    $(options.el).on('click', '.btnGroup1', question1Handler)
-    $(options.el).on('click', '.btnGroup2', question2Handler)
-    $(options.el).on('click', '#gameView .cell', playerMoveHandler)
-    $(options.el).on('click', '#resultView', beginGame)
-  
-    render ()
+    
+    options.el.innerHTML = html;
   }
-  
-  
-  const board = new Board ({
-    el : document.getElementById('root')
-  })
-  
+
+  function question1Handler(ev) {
+    state.players[1].isComputer = !(
+      $(ev.currentTarget).attr("data") === "2players"
+    );
+    state.view = VIEW.question2;
+    render();
+  }
+
+  function question2Handler(ev) {
+    let player1Symbol = $(ev.currentTarget).attr("data");
+    state.players[0].symbol = player1Symbol;
+    state.players[1].symbol =
+      player1Symbol === SYMBOLS.x ? SYMBOLS.o : SYMBOLS.x;
+
+    state.view = VIEW.game;
+    initGame();
+    if (state.players[state.game.turn].isComputer) doComputerMove();
+
+    render();
+  }
+
+  function doComputerMove() {
+    let symbol = state.players[1].symbol;
+    let move = getBestMove(state.game._gameBoard, symbol).move;
+    executeTurn(state.game._gameBoard, move, symbol);
+  }
+
+  function playerMoveHandler(ev) {
+    let symbol = state.players[state.game.turn].symbol;
+    let row = parseInt($(ev.currentTarget).attr("data-row"));
+    let column = parseInt($(ev.currentTarget).attr("data-column"));
+    executeTurn(state.game._gameBoard, { row, column }, symbol);
+  }
+
+  function applyMove(board, move, symbol) {
+    board[move.row][move.column] = symbol;
+    return board;
+  }
+
+  function executeTurn(board, move, symbol) {
+    if (board[move.row][move.column] !== "") {
+      return board;
+    }
+
+    applyMove(board, move, symbol);
+    let result = getResult(board, symbol).result;
+
+    if (result === RESULT.incomplete) {
+      state.game.turn = (state.game.turn + 1) % 2;
+      render();
+    } else {
+    
+      if (result !== RESULT.tie) {
+        let winningPlayer = state.players.find(player => {
+          return player.symbol == result;
+        });
+        winningPlayer.score++;
+      }
+
+      state.view = VIEW.result;
+      render();
+    }
+    if (
+      result == RESULT.incomplete &&
+      state.players[state.game.turn].isComputer
+    ) {
+      doComputerMove();
     }
   }
+
+  function beginGame() {
+    initGame();
+    state.view = VIEW.game;
+    render();
+    if (state.game.turn === 1 && state.players[1].isComputer) doComputerMove();
+  }
+
+  $(options.el).on("click", ".btnGroup1", question1Handler);
+  $(options.el).on("click", ".btnGroup2", question2Handler);
+  $(options.el).on("click", "#gameView .cell", playerMoveHandler);
+  $(options.el).on("click", "#resultView", beginGame);
+
+  render();
 }
+
+const board = new Board({
+  el: document.getElementById("root")
+});
