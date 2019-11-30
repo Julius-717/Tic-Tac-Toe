@@ -1,6 +1,6 @@
 html,
 body {
-  background-color: blueviolet;
+  background-color: black;
   color: white;
   width: 100%;
   display: flex;
@@ -28,8 +28,8 @@ button {
 
 .cell {
   display: inline-block;
-  border: 1px solid blueviolet;
-  width: 15opx;
+  border: 1px solid black;
+  width: 150px;
   height: 150px;
   background-color: white;
   overflow: hidden;
@@ -52,5 +52,5 @@ button {
 }
 
 .cell.winningLine {
-    color: green;
+  color: green;
 }
