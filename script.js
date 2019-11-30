@@ -78,4 +78,14 @@ function Board (optons){
             }
         }
     }
+
+    for (var j=0 ; j<3; j++){
+        let column = [board[0][j],board[1][j],board[2][j]]
+        line = column.join('')
+        if(succession(line)){
+            result = symbol
+            winningLine = [[0,j], [i,j], [2,j]]
+            return {result, winningLine};
+        }
+    }
 }
