@@ -182,5 +182,166 @@ function Board(optons) {
         return moveB.score - moveA.score
     })
     return availableMovesAndScores[0]
+  } 
+
+  function render(){
+      funtion getPlayerName(playerSymbol) {
+          if(playerSymbol === state.players[0].symbol)
+            return state.players[0].isComputer ? 'Computer' : "Player1"
+            return state.players[1].isComputer ? 'Computer' : "Player2"
+      }
+
+      function buttonHTML(btnGroup, data, text){
+          return `<button type="button" class="btn btn-lg btn-default btnGroup${btnGroup}" data=${data}>${text}</button>`
+      }
+
+      function htmlQ1(){
+          return `div id="view2"><h3>${!state.players[1].isComputer? "Player 1, <br />" : ""}Which symbols would you like to use?</h3>}`
+          ${buttonHTML(1, "1player", "Man Against computer")}
+          ${buttonHTML(2, "2players", "Man Against Man")}
+          </div>`
+      }
+
+      function htmlQ2(){
+        const html2=`<div id="view2"><h3>${!state.players[1].isComputer? "Player 1, <br />" : ""}Which symbols would you like to use?</h3>
+        ${buttonHTML(2, "X", "X")}
+        ${buttonHTML(2, "O", "O")}`
+        return html2
+      }
+
+      function htmlGame (){
+        const moveNumber = moveCount(state.game._gameBoard) + 1
+        const playerName = state.game.turn === 0 ? 'Player1' : state.players[1].isComputer ? 'Computer' : 'Player2'
+
+
+        let htmlBefore = `<h3>move: ${moveNumber} ${htmlSpaces(5)} turn: ${playerName}</h3>`
+      let board = state.game._gameBoard.reduce(function(acc,curr,rowIndex){
+          return acc + `<div id= "row${rowIndex}" class="row">${curr.map((str,colIndex)=>`<div class="cell col${colIndex}" data-row=${rowIndex} data-column=${colIndex}>${str}</div>`).join('')}</div>`
+        }, ``)
+        let htmlAfter = `<h4>Score: ${htmlSpaces(1)} Player 1 - ${state.players[0].score} ${htmlSpaces(2)} ${state.players[1].isComputer? "Computer" : "Player 2" } - ${state.players[1].score}</h4>`
+      return `<div id='gameView'> ${htmlBefore} <div id="board">${board}</div> ${htmlAfter} </div>`
+
+
+      function htmlGameEnd (){
+        function arraysAreEqual (arr1, arr2){
+          if(arr1.length !== arr2.length)
+            return false;
+          for(var i = arr1.length; i--;) {
+              if(arr1[i] !== arr2[i])
+                  return false;
+          }
+          return true;
+        }
+  
+        let {result, winningLine} = getResult(state.game._gameBoard, state.players[state.game.turn].symbol )
+        let resultText = "tie"
+        if(result !== RESULT.tie)
+          resultText = getPlayerName(result) + " Won"
+  
+        let htmlBefore = `<h3>${resultText} ${htmlSpaces(2)} Click to restart </h3> `
+        let board = state.game._gameBoard.reduce(function(acc,curr,rowIndex){
+            return acc + `<div id="row${rowIndex}" class="row">${curr.map(
+              (str,colIndex)=>
+              `<div class="cell col${colIndex} ${winningLine.some(arr=>(arraysAreEqual(arr,[rowIndex,colIndex]))) ? "winningLine" : ""}"
+                data-row=${rowIndex} data-column=${colIndex}>${str}</div>`).join('')}</div>`
+          }, ``)
+          let htmlAfter = `<h4>Score: ${htmlSpaces(1)} Player 1 - ${state.players[0].score} ${htmlSpaces(2)} ${state.players[1].isComputer? "Computer" : "Player 2" } - ${state.players[1].score}</h4>`
+        return `<div id='resultView'> ${htmlBefore} <div id="board">${board}</id> ${htmlAfter} </div>`
+      }
+  
+      let html = ''
+      if (state.view == VIEW.question1) {html = htmlQ1()}
+      else if (state.view == VIEW.question2) {html = htmlQ2()}
+      else if (state.view == VIEW.result) {html=htmlGameEnd()}
+      else {html=htmlGame()}
+      // console.log(html)
+      options.el.innerHTML = html
+    }
+  
+    function question1Handler (ev){
+      state.players[1].isComputer = !($(ev.currentTarget).attr('data')==="2players")
+      state.view = VIEW.question2
+      render()
+    }
+  
+    function question2Handler (ev){
+      let player1Symbol = $(ev.currentTarget).attr('data')
+      state.players[0].symbol=player1Symbol;
+      state.players[1].symbol=(player1Symbol===SYMBOLS.x)? SYMBOLS.o: SYMBOLS.x;
+  
+      state.view = VIEW.game
+      initGame()
+      if(state.players[state.game.turn].isComputer)
+        doComputerMove()
+  
+      render()
+    }
+  
+    function doComputerMove (){
+      let symbol = state.players[1].symbol
+      let move = getBestMove(state.game._gameBoard, symbol).move
+      executeTurn(state.game._gameBoard,move, symbol)
+    }
+  
+    function playerMoveHandler (ev){
+      let symbol = state.players[state.game.turn].symbol
+      let row = parseInt($(ev.currentTarget).attr('data-row'))
+      let column = parseInt($(ev.currentTarget).attr('data-column'))
+      executeTurn(state.game._gameBoard, {row, column}, symbol)
+    }
+  
+    function applyMove(board,move, symbol) {
+      board[move.row][move.column]= symbol
+      return board
+    }
+  
+    function executeTurn(board, move, symbol) {
+      if (board[move.row][move.column]!==""){
+        return board
+      }
+  
+      applyMove(board,move,symbol)
+      let result = getResult(board, symbol).result
+  
+      if (result === RESULT.incomplete){
+        state.game.turn = (state.game.turn+1)%2
+        render()
+      } else {
+        //Increment score and show result
+        if(result !== RESULT.tie) {
+          let winningPlayer = state.players.find((player)=>{return player.symbol == result})
+          winningPlayer.score++
+        }
+  
+        state.view = VIEW.result
+        render()
+      }
+      if (result==RESULT.incomplete && state.players[state.game.turn].isComputer){
+        doComputerMove()
+      }
+    }
+  
+    function beginGame(){
+      initGame()
+      state.view = VIEW.game
+      render()
+      if(state.game.turn === 1 && state.players[1].isComputer)
+        doComputerMove();
+    }
+  
+    $(options.el).on('click', '.btnGroup1', question1Handler)
+    $(options.el).on('click', '.btnGroup2', question2Handler)
+    $(options.el).on('click', '#gameView .cell', playerMoveHandler)
+    $(options.el).on('click', '#resultView', beginGame)
+  
+    render ()
+  }
+  
+  
+  const board = new Board ({
+    el : document.getElementById('root')
+  })
+  
+    }
   }
 }
