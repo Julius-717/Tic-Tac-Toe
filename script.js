@@ -104,4 +104,11 @@ function Board (optons){
         winningLine = [[0,2], [1,1], [2,0]]
         return {result, winningLine};
     }
+
+    if (moveCount(board)==9){
+        result=RESULT.tie
+        return {result, winningLine}
+    }
+
+    return {result}
 }
