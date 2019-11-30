@@ -14,3 +14,7 @@ const VIEW = {
     game: 3,
     result: 4
 }
+
+function Board (optons){
+    
+}
